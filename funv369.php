@@ -1,3 +1,4 @@
+
 <?php
 /**
  * Enqueue script and styles for child theme
@@ -28,7 +29,7 @@ function check_national_code($code) {
 // Verify national code and phone number with Ehraz API
 function verify_national_code_and_phone($national_code, $phone_number) {
     $url = 'https://ehraz.io/api/v1/match/national-with-mobile'; // API endpoint
-    $token = 'Token c709f9e508633b86984892caa7f4e2e613bd0ead'; // Your token
+    $token = 'Token '; // Your token
 
     $data = array(
         'nationalCode' => $national_code,
@@ -97,23 +98,26 @@ function verify_national_code_on_checkout() {
 }
 add_action('woocommerce_checkout_process', 'verify_national_code_on_checkout');
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
-// Save the national code in the order
+// Save the national code in the order and as user meta
 function save_custom_national_code_field($order_id) {
     if (!empty($_POST['puiw_billing_uin'])) {
-        update_post_meta($order_id, 'puiw_billing_uin', sanitize_text_field($_POST['puiw_billing_uin']));
+        $national_code = sanitize_text_field($_POST['puiw_billing_uin']);
+
+        // Save to order meta
+        update_post_meta($order_id, 'puiw_billing_uin', $national_code);
+
+        // Save to user meta if user is logged in
+        $user_id = get_current_user_id();
+        if ($user_id) {
+            update_user_meta($user_id, 'puiw_billing_uin', $national_code);
+        }
     }
 }
 add_action('woocommerce_checkout_update_order_meta', 'save_custom_national_code_field');
 
 // Display the national code in the admin orders section
 function checkout_field_display_admin_order_meta($order) {
-    echo '<p><strong>' . __('ورود مجدد کد ملی') . ':</strong> ' . get_post_meta($order->get_id(), 'puiw_billing_uin', true) . '</p>';
+    echo '<p><strong>' . __('کد ملی') . ':</strong> ' . get_post_meta($order->get_id(), 'puiw_billing_uin', true) . '</p>';
 }
 add_action('woocommerce_admin_order_data_after_billing_address', 'checkout_field_display_admin_order_meta', 10, 1);
 
@@ -155,20 +159,3 @@ function display_national_code_in_admin_user_profile($user) {
 }
 add_action('show_user_profile', 'display_national_code_in_admin_user_profile');
 add_action('edit_user_profile', 'display_national_code_in_admin_user_profile');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
