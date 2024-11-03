@@ -28,7 +28,7 @@ function check_national_code($code) {
 // Verify national code and phone number with Ehraz API
 function verify_national_code_and_phone($national_code, $phone_number) {
     $url = 'https://ehraz.io/api/v1/match/national-with-mobile'; // API endpoint
-    $token = 'Token c709f9e508633b86984892caa7f4e2e613bd0ead'; // Your token
+    $token = 'Token '; // Your token
 
     $data = array(
         'nationalCode' => $national_code,
